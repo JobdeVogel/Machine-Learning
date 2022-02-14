@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from functions import loading
 from options import set_options
+from features.convexhull import getConvexHullArea
 
 class pointCloudObject:
     def __str__(self):
@@ -18,7 +19,7 @@ class pointCloudObject:
 
     # Feature 2: convex hull area
     def convex_hull_area(self):
-        return 1
+        return getConvexHullArea(self.coordinates, 1)
     
     # Feature 3: convec hull volume
     def convex_hull_volume(self):

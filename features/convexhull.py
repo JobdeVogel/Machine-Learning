@@ -44,6 +44,7 @@ def getConvexHullArea(points, prec_factor):
     hull_y = []
     p_start = p
     q = 0
+
     while(True):
         #Save X and Y of hull coordinates
         hull_x.append(points[p][0])
@@ -63,6 +64,6 @@ def getConvexHullArea(points, prec_factor):
         #When a full circle is completed: stop
         if (p == p_start):
             break
-
+    
     #Return the area using the shoelace formula
     return 0.5*np.abs(np.dot(hull_x, np.roll(hull_y, 1))-np.dot(hull_y, np.roll(hull_x, 1)))

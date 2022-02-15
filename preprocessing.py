@@ -19,7 +19,12 @@ class pointCloudObject:
 
     # Feature 2: convex hull area
     def convex_hull_area(self):
-        return getConvexHullArea(self.coordinates, 1)
+        """
+        Precision factor indicates precision of area        
+        """
+        
+        prec_factor = 1
+        return getConvexHullArea(self.coordinates, prec_factor)
     
     # Feature 3: convec hull volume
     def convex_hull_volume(self):

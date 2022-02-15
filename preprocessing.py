@@ -1,9 +1,11 @@
 import os
 import numpy as np
 import pandas as pd
-from functions import loading
+from functions import loading, color_plt
 from options import set_options
 from features.convexhull import getConvexHullArea
+from time import time
+import matplotlib.pyplot as plt
 
 class pointCloudObject:
     def __str__(self):
@@ -22,13 +24,9 @@ class pointCloudObject:
         """
         Precision factor indicates precision of area        
         """
-        
+
         prec_factor = 1
         return getConvexHullArea(self.coordinates, prec_factor)
-    
-    # Feature 3: convec hull volume
-    def convex_hull_volume(self):
-        return 1
 
 def xyz_to_df(directory, filename):
     filename = os.path.join(directory, filename)
@@ -39,7 +37,7 @@ def xyz_to_df(directory, filename):
     return pointCloud
 
 def df_to_csv(dataframe, csv_name):
-    dataframe.to_csv(csv_name, index=False)
+    dataframe.to_csv(csv_name)
 
 # Convert all the 1D feature arrays to ndarray
 def generate_feature_array(*args: np.array):
@@ -53,8 +51,7 @@ def normalize_by_column(dataframe):
 def preprocess(directory):
     amount_of_files = len(os.listdir(directory))
 
-    z_indices = np.empty([amount_of_files], dtype=np.float64)
-    convex_hull_volumes = np.empty([amount_of_files], dtype=np.float64)
+    z_heights = np.empty([amount_of_files], dtype=np.float64)
     convex_hull_areas = np.empty([amount_of_files], dtype=np.float64)
 
     # For each file in data directory
@@ -70,18 +67,26 @@ def preprocess(directory):
         pointCloud = pointCloudObject(name, data)
 
         # Add all features of pointCloud to their feature containers
-        z_indices[i] = pointCloud.max_z()
+        z_heights[i] = pointCloud.max_z()
         convex_hull_areas[i] = pointCloud.convex_hull_area()
-        convex_hull_volumes[i] = pointCloud.convex_hull_volume()
 
     print('\n')
-    feature_array = generate_feature_array(z_indices, convex_hull_areas, convex_hull_volumes)
-    feature_array_df = pd.DataFrame(feature_array, columns=['z_indices', 'convex_hull_areas', 'convex_hull_volumes'])
+
+    # Clip the convex_hull_areas
+    print(z_heights)
+    convex_hull_areas = np.clip(convex_hull_areas, 0, 500)
+    print(z_heights)
+
+    feature_array = generate_feature_array(z_heights, convex_hull_areas)
+    feature_array_df = pd.DataFrame(feature_array, columns=['z_heights', 'convex_hull_areas'])
 
     feature_array_norm = normalize_by_column(feature_array_df)
     
     return feature_array_norm
 
+###############################
 set_options()
+features = preprocess('./data')
 
-print(preprocess('./data'))
+color_plt(features)
+

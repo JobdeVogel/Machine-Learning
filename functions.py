@@ -6,7 +6,15 @@ def loading(file, amount_of_files):
     percentage = round((file / amount_of_files) * 100, 2)
     print('Preprocessing ' + str(percentage) + '% completed', end="\r")
 
-def color_plt(dataframe):
+"""
+Green: Houses
+Yellow: Cars
+Red: Fences
+Blue: Traffic Lights
+Orange: Trees
+"""
+
+def color_plt(dataframe, *features):
     colors = ['green', 'yellow', 'red', 'blue', 'orange']
     color_selection = []
 
@@ -15,23 +23,15 @@ def color_plt(dataframe):
         for i in range(100):
             color_selection.append(color)
 
-    dataframe.plot(kind='scatter', x='z_heights',y='convex_hull_areas',color=color_selection)
-    plt.show()
+    if len(features) == 2:
+        dataframe.plot(kind='scatter', x=features[0], y=features[1],color=color_selection)
+    elif len(features) == 3:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.set_xlabel(features[0])
+        ax.set_ylabel(features[1])
+        ax.set_zlabel(features[2])
 
-def color_plt3d(dataframe):
-    colors = ['green', 'yellow', 'red', 'blue', 'orange']
-    color_selection = []
-
-    for i in range(5):
-        color = colors[i]
-        for i in range(100):
-            color_selection.append(color)
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlabel('z_height')
-    ax.set_ylabel('convex_hull_area')
-    ax.set_zlabel('bounding_box_volume')
-
-    ax.scatter(dataframe['z_height'], dataframe['convex_hull_area'], dataframe['bounding_box_volume'], color=color_selection)
+        ax.scatter(dataframe[features[0]], dataframe[features[1]], dataframe[features[2]], color=color_selection)
+    
     plt.show()

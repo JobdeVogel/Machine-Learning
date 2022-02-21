@@ -1,8 +1,10 @@
 import os
 import numpy as np
 import pandas as pd
-from functions import loading, color_plt, color_plt3d
+from functions import loading, color_plt
 from options import set_options
+from features.zheight import z_height
+from features.shaperatio import shapeRatio
 from features.convexhull import getConvexHullArea
 from features.pointcloudbb import pointcloud_bounding_box
 
@@ -16,24 +18,23 @@ class pointCloudObject:
 
     # Feature 1: calculate the max z coordinate
     def max_z(self):
-        return np.average(self.coordinates['z'])
-        #return self.coordinates['z'].max(0)
+        return z_height(self.coordinates)
 
     # Feature 2: convex hull area
     def convex_hull_area(self):
         """
         Precision factor indicates precision of area        
         """
-
         prec_factor = 1
         return getConvexHullArea(self.coordinates, prec_factor)
     
     # Feature 3: minimal bounding box volume
     def bounding_box_volume(self):
         return pointcloud_bounding_box(self.coordinates)
-
-    # Possible relevant features
-    # Average z_height? Higher for trees, lower for cars?
+    
+    # Feature 4: y_range x_range ratio
+    def shape_ratio(self):
+        return shapeRatio(self.coordinates, 1)
 
 def xyz_to_df(directory, filename):
     filename = os.path.join(directory, filename)
@@ -59,12 +60,12 @@ def preprocess(directory):
     amount_of_files = len(os.listdir(directory))
 
     z_heights = np.empty([amount_of_files], dtype=np.float64)
+    shape_ratios = np.empty([amount_of_files], dtype=np.float64)
     convex_hull_areas = np.empty([amount_of_files], dtype=np.float64)
     bounding_box_volumes = np.empty([amount_of_files], dtype=np.float64)
-
+    
     # For each file in data directory
     for i, filename in enumerate(os.listdir(directory)):
-
         loading(i, amount_of_files)
 
         # Convert file data to dataframe
@@ -76,28 +77,44 @@ def preprocess(directory):
 
         # Add all features of pointCloud to their feature containers
         z_heights[i] = pointCloud.max_z()
+        shape_ratios[i] = pointCloud.shape_ratio()
         convex_hull_areas[i] = pointCloud.convex_hull_area()
         bounding_box_volumes[i] = pointCloud.bounding_box_volume()
-
+        
     # Clip the values
     z_heights = np.clip(z_heights, 0, 15)
-    convex_hull_areas = np.clip(convex_hull_areas, 0, 250)
-    bounding_box_volumes = np.clip(bounding_box_volumes, 0, 4000)
+    shape_ratios = np.clip(shape_ratios, 0, 2)
+    convex_hull_areas = np.clip(convex_hull_areas, 0, 100)
+    bounding_box_volumes = np.clip(bounding_box_volumes, 0, 3000)
 
     # Format the features
-    feature_array = generate_feature_array(z_heights, convex_hull_areas, bounding_box_volumes)
-    feature_array_df = pd.DataFrame(feature_array, columns=['z_height', 'convex_hull_area', 'bounding_box_volume'])
+    feature_array = generate_feature_array(z_heights, shape_ratios, convex_hull_areas, bounding_box_volumes)
+    feature_array_df = pd.DataFrame(feature_array, columns=['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes'])
 
     # Normalize the features
     feature_array_norm = normalize_by_column(feature_array_df)
     
-    return feature_array_norm
+    # Specify if you want features_array_df or features_array_norm:
+    return feature_array_df
 
 ###############################
+# Specify features:
+FEATURES = ['z_height', 'shape_ratios', 'bounding_box_volumes']
 
 set_options()
 features = preprocess('./data')
-df_to_csv(features, 'csv_data.csv')
-print(features)
 
-color_plt3d(features)
+# Save data to csv
+df_to_csv(features, 'csv_data.csv')
+
+# Print and plot result
+print(features)
+color_plt(features, *FEATURES)
+
+"""
+Green: Houses
+Yellow: Cars
+Red: Fences
+Blue: Traffic Lights
+Orange: Trees
+"""

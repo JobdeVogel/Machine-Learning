@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import open3d as o3d
 
-filename = os.path.join('./data', '430.xyz')
+filename = os.path.join('./data', '060.xyz')
 
 """
 0-99: Houses

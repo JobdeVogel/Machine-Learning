@@ -33,6 +33,7 @@ https://www.analyticsvidhya.com/blog/2019/05/beginners-guide-hierarchical-cluste
 - Based on k, select len(pointcloud) - k
 """
 
+from turtle import pos
 import numpy as np
 import pandas as pd
 import time
@@ -63,7 +64,112 @@ def minkowski(p_norm, df):
     p_pow_feature_distances = distances**p_norm
     minkowski_distances = np.sum(p_pow_feature_distances, axis=0)**(1/p_norm)
     
+    # Dataframe
+    # proximity_matrix = pd.DataFrame(minkowski_distances, 
+    #                                     index=[str(i) for i in range(rows)], columns=[str(i) for i in range(rows)])
+
     return minkowski_distances
 
+# Delete the highest highest value of result, both column and row
+# Change the name of lowest value of result to {result}
+# Add result to some kind of library
+# Recalculate the values of the column/row with lowest value result
 
+def minimum_proximity_pos(proximity_matrix: pd.DataFrame):
+    # Convert df to np
+    # np_matrix = proximity_matrix.values
 
+    # Find the position of lowest value without zeros
+    min_value = np.amin(proximity_matrix[np.nonzero(proximity_matrix)])
+    position = np.where(proximity_matrix == min_value)
+    
+    
+
+    if len(position[0]) > 2:
+        position = np.array([position[0][0], position[1][0]])
+    else:
+        position = position[0]
+    
+    return position
+
+"""
+CALCULATE THE MINIMUM, MAXIMUM OR AVERAGE
+MINKOWSKI DISTANCE
+
+USE THE ORIGINAL PROXIMITY MATRIX!!!
+
+Type can be: 
+    - 'nearest'
+    - 'farthest'
+    - 'average'
+"""
+
+def hierarchical_clustering(proximity_matrix: pd.DataFrame, type='nearest'):
+    pointCount = len(proximity_matrix)
+
+    # Create an initial array to store all clusters
+    clusters = np.arange(pointCount, dtype=np.uint)
+    clusters = np.meshgrid(clusters, clusters.T)[1]
+
+    # Updated proximity matrix stores all intermediate distances
+    # for each iteration. Consider point x and y being closest,
+    # distances to point y will be overwritte to 0, and discarded
+    # in following iterations. Point x will be considered to be a
+    # group of point x and y, using the max, min or avg distance.
+    updated_proximity_matrix = proximity_matrix.copy()
+
+    # Start loop...
+    for i in range(1, pointCount):
+        # What if a distance already is 0 ????????????
+        point_x, point_y = minimum_proximity_pos(updated_proximity_matrix)
+
+        # Assign point_y to (group of) point_x
+        clusters[point_y, i:] = point_x
+        
+        # If point_y is a cluster, merge the cluster with point_x
+        connected_points = np.where(clusters[:, i] == point_y)
+        clusters[connected_points, i:] = point_x 
+
+        # Find the members of cluster x
+        cluster_members = np.where(clusters[:, i] == point_x)[0]
+
+        # Find to which points or clusters 
+        # point_x or point_y are not connected to yet
+        non_zeros_x = np.nonzero(updated_proximity_matrix[point_x])
+        non_zeros_y = np.nonzero(updated_proximity_matrix[point_y])
+        possible_dis_indices = np.intersect1d(non_zeros_x, non_zeros_y)
+        zeros = np.setxor1d(non_zeros_x, non_zeros_y)
+
+        # New distances to be assigned to group of point_x, at possible_dis_indices
+        ########## GOES WORNG HERE #####################
+        new_distances = proximity_matrix[:, cluster_members][possible_dis_indices]
+
+        # Find the distances to calculate minimum, maximum or average from
+        if type == 'nearest':
+            new_distances = new_distances.min(axis=1)
+        elif type == 'farthest':
+            new_distances = new_distances.max(axis=1)
+        elif type == 'average':
+            new_distances = new_distances.mean(axis=1)
+        else:
+            print('Type not possible for hierarchical clustering, choose between: \'nearest\', \'farthest\' or \'average\'')
+            return
+
+        # Set point_x connections that are assigned to 0        
+        updated_proximity_matrix[point_x, zeros] = 0
+        updated_proximity_matrix[zeros, point_x] = 0
+
+        # Set point_x relations that are not assigned to new_distances
+        updated_proximity_matrix[point_x, possible_dis_indices] = new_distances
+        updated_proximity_matrix[possible_dis_indices, point_x] = new_distances
+        
+        # Point_y is now properly assigned to a group, set distance to 0
+        updated_proximity_matrix[point_y] = 0
+        updated_proximity_matrix[:, point_y] = 0
+    return clusters
+
+proximity_matrix = minkowski(2, data)
+print(len(np.where(proximity_matrix == 0)[0]))
+
+# res = hierarchical_clustering(proximity_matrix, 'nearest')
+# print(res)

@@ -11,38 +11,29 @@ WE ASSUME 5 CLUSTERS:
 """
 
 """
+HIERARCHICAL CLUSTERING
+
+PSEUDECODE:
+    -   Calculate initial proximity matrix using
+        minkowski distance. Distances from points
+        to themselves are assigned with distance
+        equals infinity;
+    -   
+
+
 Pseudocode
 https://www.analyticsvidhya.com/blog/2019/05/beginners-guide-hierarchical-clustering/
 
-- Create a proximity matrix for the data
-    format: 500 x 500 matrix
-            499 x 499 matrix
-            498 x 498 matrix
-
-- Find the smallest value in the proximity matrix
-- Update proximity matrix (combine the previous values)
-            Use dataframe for the naming?
-            So if point 1 and 2 closest, naming will be 1-2
-            Store in another matrix?
-
-            Step 1 remove column point
-            Step 2 remove row point
-            Step 3 insert new column
-            Step 4 insert new row
-
-- Based on k, select len(pointcloud) - k
 """
 
-from msilib.schema import IniFile
-from turtle import pos
 import numpy as np
 import pandas as pd
 import time
 
-data = pd.read_csv('csv_data.csv')[:20]
 INFINITY = np.Inf
 
 """
+MINKOWSKI DISTANCE
 RETURNS A 500X500 PROXIMITY MATRIX
 """
 def minkowski(p_norm, df):
@@ -79,10 +70,10 @@ def minkowski(p_norm, df):
 # Add result to some kind of library
 # Recalculate the values of the column/row with lowest value result
 
-def minimum_proximity_pos(proximity_matrix: pd.DataFrame):
-    # Convert df to np
-    # np_matrix = proximity_matrix.values
-
+"""
+RETURNS A 2X1 MATRIX CONTAINING CLOSEST PAIR OF POINT INDICES
+"""
+def minimum_proximity_pos(proximity_matrix):
     # Find the position of lowest value without zeros
     min_value = np.amin(proximity_matrix[proximity_matrix < INFINITY])
     position = np.where(proximity_matrix == min_value)
@@ -94,6 +85,27 @@ def minimum_proximity_pos(proximity_matrix: pd.DataFrame):
     
     return position
 
+"""
+PRINTS THE LOADING PERCENTAGE OF THE ALGORITHM
+"""
+def loading(iteration, count):
+    percentage = round((iteration / (count - 1)) * 100, 2)
+
+    if percentage < 100:
+        print('Hierarchical Clustering ' + str(percentage) + '% completed', end="\r")
+    else:
+        print('Hierarchical Clustering ' + str(percentage) + '% completed')
+    
+    return
+
+"""
+RETURNS A 500X500 MATRIX IN WHICH EACH COLUMN
+STANDS FOR ONE ITERATION. EVERY ROW STANDS FOR
+A POINT INDEX WITH A VALUE INDICATING THE CLUSTER
+IT BELONGS TO.
+
+TO EXTRACT K CLUSTERS, TAKE CLUSTERS[LEN(CLUSTERS) - K]
+"""
 def hierarchical_clustering(proximity_matrix: pd.DataFrame, type='nearest'):
     pointCount = len(proximity_matrix)
 
@@ -110,6 +122,8 @@ def hierarchical_clustering(proximity_matrix: pd.DataFrame, type='nearest'):
 
     # Start loop...
     for i in range(1, pointCount):
+        loading(i, pointCount)
+
         # What if a distance already is 0 ????????????
         point_x, point_y = minimum_proximity_pos(updated_proximity_matrix)
 
@@ -125,16 +139,15 @@ def hierarchical_clustering(proximity_matrix: pd.DataFrame, type='nearest'):
 
         # Find to which points or clusters 
         # point_x or point_y are not connected to yet
-        non_zeros_x = updated_proximity_matrix[point_x]
-        non_zeros_x = np.where(non_zeros_x < INFINITY)
-        non_zeros_y = updated_proximity_matrix[point_y]
-        non_zeros_y = np.where(non_zeros_y < INFINITY)
+        non_inf_x = updated_proximity_matrix[point_x]
+        non_inf_x = np.where(non_inf_x < INFINITY)
+        non_inf_y = updated_proximity_matrix[point_y]
+        non_inf_y = np.where(non_inf_y < INFINITY)
 
-        possible_dis_indices = np.intersect1d(non_zeros_x, non_zeros_y)
-        zeros = np.setxor1d(non_zeros_x, non_zeros_y)
+        possible_dis_indices = np.intersect1d(non_inf_x, non_inf_y)
+        zeros = np.setxor1d(non_inf_x, non_inf_y)
 
         # New distances to be assigned to group of point_x, at possible_dis_indices
-        ########## GOES WORNG HERE #####################
         new_distances = proximity_matrix[:, cluster_members][possible_dis_indices]
 
         # Find the distances to calculate minimum, maximum or average from
@@ -163,20 +176,55 @@ def hierarchical_clustering(proximity_matrix: pd.DataFrame, type='nearest'):
     return clusters
 
 """
-CALCULATE THE MINIMUM, MAXIMUM OR AVERAGE
-MINKOWSKI DISTANCE
+RETURNS:
+- [0] AN NP ARRAY WITH ALL INDICES ORDERED BY CLUSTER
+- [1] THE SIZES OF THE CLUSTERS
 
-USE THE ORIGINAL PROXIMITY MATRIX!!!
-
-Type can be: 
-    - 'nearest'
-    - 'farthest'
-    - 'average'
+TO BE PLOTTED WITH MATPLOTLIB
 """
 
+def extract_cluster(clusters, k):
+    cluster = clusters[:, len(clusters) - k]
 
-proximity_matrix = minkowski(2, data)
-# pd.DataFrame(proximity_matrix).to_csv('proximity_matrix.csv')
+    # All unique origins of the clusters
+    cluster_origins = np.unique(cluster)
+    
+    # Initialize containers for cluster sizes and indices
+    # Add the first cluster to the cluster indices and sizes
+    cluster_assignment = np.zeros([0], dtype=np.int32)
+    cluster_indices = np.zeros([0])
+    
+    # For each other cluster, add the indices and sizes to the
+    # corresponding containers
+    for i, origin in enumerate(cluster_origins):
+        indices = np.where(cluster == origin)
+        
+        cluster_indices = np.append(cluster_indices, indices)
+        cluster_assignment = np.append(cluster_assignment, np.repeat(i, indices[0].size))
 
-res = hierarchical_clustering(proximity_matrix, 'nearest')
-print(res)
+    sorting_ints = cluster_indices.argsort()
+    cluster_assignment = cluster_assignment[sorting_ints]
+
+    return cluster_assignment
+
+def main(p_norm, k, type, data):
+    # p_norm = 2
+    # k = 5
+    # type = 'nearest' #Choose between 'nearest' 'average' 'farthest'
+
+    start = time.time()
+    # Calculate the proximity matrix for the data
+    proximity_matrix = minkowski(p_norm, data)
+
+    # Save the proximity matrix to a csv
+    # pd.DataFrame(proximity_matrix).to_csv('proximity_matrix.csv')
+
+    # Calculate the clusters
+    clusters = hierarchical_clustering(proximity_matrix, type)
+    result = extract_cluster(clusters, k)
+    end = time.time()
+
+    print(result)
+
+    print('Hierarchical clustering completed in {} seconds'.format(round(end-start, 2)))
+    return result

@@ -2,27 +2,16 @@ import matplotlib.pyplot as plt
 
 """ THIS FILE CONTAINS GENERAL FUNCTIONS """
 
-def loading(file, amount_of_files):
-    percentage = round((file / amount_of_files) * 100, 2)
-    print('Preprocessing ' + str(percentage) + '% completed', end="\r")
+def loading(text, step, count):
+    percentage = round((step / (count - 1)) * 100, 2)
 
-"""
-Green: Houses
-Yellow: Cars
-Red: Fences
-Blue: Traffic Lights
-Orange: Trees
-"""
+    if percentage < 100:
+        print(text + ' ' + str(percentage) + '% completed', end="\r")
+    else:
+        print(text + ' ' + str(percentage) + '% completed')
+    return
 
-def color_plt(dataframe, *features):
-    colors = ['green', 'yellow', 'red', 'blue', 'orange']
-    color_selection = []
-
-    for i in range(5):
-        color = colors[i]
-        for i in range(100):
-            color_selection.append(color)
-
+def color_plt(dataframe, color_selection, *features):
     if len(features) == 2:
         dataframe.plot(kind='scatter', x=features[0], y=features[1],color=color_selection)
     elif len(features) == 3:

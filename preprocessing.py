@@ -44,8 +44,8 @@ def xyz_to_df(directory, filename):
     
     return pointCloud
 
-def df_to_csv(dataframe, csv_name):
-    dataframe.to_csv(csv_name)
+def df_to_csv(dataframe, csv_name, index_bool=False):
+    dataframe.to_csv(csv_name, index=index_bool)
 
 # Convert all the 1D feature arrays to ndarray
 def generate_feature_array(*args: np.array):
@@ -66,7 +66,7 @@ def preprocess(directory):
     
     # For each file in data directory
     for i, filename in enumerate(os.listdir(directory)):
-        loading(i, amount_of_files)
+        loading('Preprocessing', i, amount_of_files)
 
         # Convert file data to dataframe
         data = xyz_to_df(directory, filename)
@@ -95,21 +95,11 @@ def preprocess(directory):
     feature_array_norm = normalize_by_column(feature_array_df)
     
     # Specify if you want features_array_df or features_array_norm:
-    return feature_array_df
+    return feature_array_norm
 
 ###############################
-# Specify features:
-FEATURES = ['z_height', 'shape_ratios', 'bounding_box_volumes']
-
+FEATURES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
 set_options()
-features = preprocess('./data')
-
-# Save data to csv
-df_to_csv(features, 'csv_data.csv')
-
-# Print and plot result
-print(features)
-color_plt(features, *FEATURES)
 
 """
 Green: Houses
@@ -118,3 +108,20 @@ Red: Fences
 Blue: Traffic Lights
 Orange: Trees
 """
+
+colors = ['green', 'yellow', 'red', 'blue', 'orange']
+color_selection = []
+
+for i in range(5):
+    color = colors[i]
+    for i in range(100):
+        color_selection.append(color)
+
+features = preprocess('./data')
+
+# Save data to csv
+df_to_csv(features[FEATURES], 'csv_data.csv', False)
+
+# Print and plot result
+print(features)
+color_plt(features, color_selection, *FEATURES)

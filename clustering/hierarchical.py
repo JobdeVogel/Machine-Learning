@@ -33,12 +33,14 @@ https://www.analyticsvidhya.com/blog/2019/05/beginners-guide-hierarchical-cluste
 - Based on k, select len(pointcloud) - k
 """
 
+from msilib.schema import IniFile
 from turtle import pos
 import numpy as np
 import pandas as pd
 import time
 
-data = pd.read_csv('csv_data.csv')
+data = pd.read_csv('csv_data.csv')[:20]
+INFINITY = np.Inf
 
 """
 RETURNS A 500X500 PROXIMITY MATRIX
@@ -64,6 +66,8 @@ def minkowski(p_norm, df):
     p_pow_feature_distances = distances**p_norm
     minkowski_distances = np.sum(p_pow_feature_distances, axis=0)**(1/p_norm)
     
+    np.fill_diagonal(minkowski_distances, INFINITY)
+    
     # Dataframe
     # proximity_matrix = pd.DataFrame(minkowski_distances, 
     #                                     index=[str(i) for i in range(rows)], columns=[str(i) for i in range(rows)])
@@ -80,29 +84,15 @@ def minimum_proximity_pos(proximity_matrix: pd.DataFrame):
     # np_matrix = proximity_matrix.values
 
     # Find the position of lowest value without zeros
-    min_value = np.amin(proximity_matrix[np.nonzero(proximity_matrix)])
+    min_value = np.amin(proximity_matrix[proximity_matrix < INFINITY])
     position = np.where(proximity_matrix == min_value)
     
-    
-
     if len(position[0]) > 2:
         position = np.array([position[0][0], position[1][0]])
     else:
         position = position[0]
     
     return position
-
-"""
-CALCULATE THE MINIMUM, MAXIMUM OR AVERAGE
-MINKOWSKI DISTANCE
-
-USE THE ORIGINAL PROXIMITY MATRIX!!!
-
-Type can be: 
-    - 'nearest'
-    - 'farthest'
-    - 'average'
-"""
 
 def hierarchical_clustering(proximity_matrix: pd.DataFrame, type='nearest'):
     pointCount = len(proximity_matrix)
@@ -135,8 +125,11 @@ def hierarchical_clustering(proximity_matrix: pd.DataFrame, type='nearest'):
 
         # Find to which points or clusters 
         # point_x or point_y are not connected to yet
-        non_zeros_x = np.nonzero(updated_proximity_matrix[point_x])
-        non_zeros_y = np.nonzero(updated_proximity_matrix[point_y])
+        non_zeros_x = updated_proximity_matrix[point_x]
+        non_zeros_x = np.where(non_zeros_x < INFINITY)
+        non_zeros_y = updated_proximity_matrix[point_y]
+        non_zeros_y = np.where(non_zeros_y < INFINITY)
+
         possible_dis_indices = np.intersect1d(non_zeros_x, non_zeros_y)
         zeros = np.setxor1d(non_zeros_x, non_zeros_y)
 
@@ -156,20 +149,34 @@ def hierarchical_clustering(proximity_matrix: pd.DataFrame, type='nearest'):
             return
 
         # Set point_x connections that are assigned to 0        
-        updated_proximity_matrix[point_x, zeros] = 0
-        updated_proximity_matrix[zeros, point_x] = 0
+        updated_proximity_matrix[point_x, zeros] = INFINITY
+        updated_proximity_matrix[zeros, point_x] = INFINITY
 
         # Set point_x relations that are not assigned to new_distances
         updated_proximity_matrix[point_x, possible_dis_indices] = new_distances
         updated_proximity_matrix[possible_dis_indices, point_x] = new_distances
         
         # Point_y is now properly assigned to a group, set distance to 0
-        updated_proximity_matrix[point_y] = 0
-        updated_proximity_matrix[:, point_y] = 0
+        updated_proximity_matrix[point_y] = INFINITY
+        updated_proximity_matrix[:, point_y] = INFINITY
+
     return clusters
 
-proximity_matrix = minkowski(2, data)
-print(len(np.where(proximity_matrix == 0)[0]))
+"""
+CALCULATE THE MINIMUM, MAXIMUM OR AVERAGE
+MINKOWSKI DISTANCE
 
-# res = hierarchical_clustering(proximity_matrix, 'nearest')
-# print(res)
+USE THE ORIGINAL PROXIMITY MATRIX!!!
+
+Type can be: 
+    - 'nearest'
+    - 'farthest'
+    - 'average'
+"""
+
+
+proximity_matrix = minkowski(2, data)
+# pd.DataFrame(proximity_matrix).to_csv('proximity_matrix.csv')
+
+res = hierarchical_clustering(proximity_matrix, 'nearest')
+print(res)

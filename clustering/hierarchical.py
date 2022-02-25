@@ -224,7 +224,5 @@ def main(p_norm, k, type, data):
     result = extract_cluster(clusters, k)
     end = time.time()
 
-    print(result)
-
     print('Hierarchical clustering completed in {} seconds'.format(round(end-start, 2)))
     return result

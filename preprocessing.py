@@ -88,8 +88,8 @@ def preprocess(directory):
     bounding_box_volumes = np.clip(bounding_box_volumes, 0, 3000)
 
     # Format the features
-    feature_array = generate_feature_array(z_heights, shape_ratios, convex_hull_areas, bounding_box_volumes)
-    feature_array_df = pd.DataFrame(feature_array, columns=['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes'])
+    feature_array = generate_feature_array(z_heights, convex_hull_areas, bounding_box_volumes)
+    feature_array_df = pd.DataFrame(feature_array, columns=['z_height', 'convex_hull_areas', 'bounding_box_volumes'])
 
     # Normalize the features
     feature_array_norm = normalize_by_column(feature_array_df)
@@ -98,30 +98,30 @@ def preprocess(directory):
     return feature_array_norm
 
 ###############################
-FEATURES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
-set_options()
+# FEATURES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
+# set_options()
 
-"""
-Green: Houses
-Yellow: Cars
-Red: Fences
-Blue: Traffic Lights
-Orange: Trees
-"""
+# """
+# Green: Houses
+# Yellow: Cars
+# Red: Fences
+# Blue: Traffic Lights
+# Orange: Trees
+# """
 
-colors = ['green', 'yellow', 'red', 'blue', 'orange']
-color_selection = []
+# colors = ['green', 'yellow', 'red', 'blue', 'orange']
+# color_selection = []
 
-for i in range(5):
-    color = colors[i]
-    for i in range(100):
-        color_selection.append(color)
+# for i in range(5):
+#     color = colors[i]
+#     for i in range(100):
+#         color_selection.append(color)
 
-features = preprocess('./data')
+# features = preprocess('./data')
 
-# Save data to csv
-df_to_csv(features[FEATURES], 'csv_data.csv', False)
+# # Save data to csv
+# df_to_csv(features[FEATURES], 'csv_data.csv', False)
 
-# Print and plot result
-print(features)
-color_plt(features, color_selection, *FEATURES)
+# # Print and plot result
+# print(features)
+# color_plt(features, color_selection, *FEATURES)

@@ -222,7 +222,9 @@ def main(p_norm, k, type, data):
     # Calculate the clusters
     clusters = hierarchical_clustering(proximity_matrix, type)
     result = extract_cluster(clusters, k)
+    print(result)
     end = time.time()
+
 
     print('Hierarchical clustering completed in {} seconds'.format(round(end-start, 2)))
     return result

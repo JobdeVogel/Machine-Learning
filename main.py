@@ -2,18 +2,12 @@
 import numpy as np
 import pandas as pd
 from preprocessing import preprocess
+from clustering import kmeans
 from clustering import hierarchical
+from clustering import dbscan
 from functions import color_plt
 from options import set_options
 from evaluation import evaluation
-
-"""
-CHOOSE BETWEEN EXTRACTING DATA FROM CSV FILE
-OR USE THE PREPROCESSING FUNCTION.
-"""
-
-data = preprocess('./data')
-#data = pd.read_csv('csv_data.csv')
 
 def main(data):
     FEATURES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
@@ -37,12 +31,22 @@ def main(data):
     evaluation(hierarchical_clusters)
     
     color_selection = []
-    colors = ['yellow', 'green', 'red', 'blue', 'orange']
+    colors = ['orange', 'green', 'red', 'yellow', 'blue']
     
     for color in hierarchical_clusters:
         color_selection.append(colors[color])
 
     color_plt(data, color_selection, *FEATURES)
+
+#################################################################################
+
+"""
+CHOOSE BETWEEN EXTRACTING DATA FROM CSV FILE
+OR USE THE PREPROCESSING FUNCTION.
+"""
+
+data = preprocess('./data')
+#data = pd.read_csv('csv_data.csv')
 
 main(data)
 # Best result currently with p_norm = 1 and type = 'farthest'

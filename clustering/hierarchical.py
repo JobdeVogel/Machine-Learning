@@ -208,10 +208,6 @@ def extract_cluster(clusters, k):
     return cluster_assignment
 
 def main(p_norm, k, type, data):
-    # p_norm = 2
-    # k = 5
-    # type = 'nearest' #Choose between 'nearest' 'average' 'farthest'
-
     start = time.time()
     # Calculate the proximity matrix for the data
     proximity_matrix = minkowski(p_norm, data)
@@ -222,9 +218,8 @@ def main(p_norm, k, type, data):
     # Calculate the clusters
     clusters = hierarchical_clustering(proximity_matrix, type)
     result = extract_cluster(clusters, k)
-    print(result)
+
     end = time.time()
 
-
-    print('Hierarchical clustering completed in {} seconds'.format(round(end-start, 2)))
+    print('Hierarchical clustering computed in {} seconds'.format(round(end-start, 2)))
     return result

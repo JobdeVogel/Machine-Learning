@@ -2,54 +2,68 @@
 import numpy as np
 import pandas as pd
 from preprocessing import preprocess
-from clustering import kmeans
-from clustering import hierarchical
-from clustering import dbscan
+from clustering import kmeans, hierarchical, dbscan
 from functions import color_plt
 from options import set_options
 from evaluation import evaluation
 
+"""
+# Best result currently with p_norm = 1 and type = 'farthest'
+# Perhaps more trustworthy with p_norm = 4 and type = 'average'
+# Preprocessing settings: 'z_height', 'convex_hull_areas', 'bounding_box_volumes'
+# Clipping values: 15, 2, 100, 3000
+"""
+
+def info():
+    pass
+
 def main(data):
     FEATURES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
 
-    p_norm = 1
-    k = 5
-    type = 'farthest' #Choose between 'nearest' 'average' 'farthest'
+    minpts = data.shape[1] * 2
 
-    print("features: " + str(FEATURES))
-    print("p_norm: " + str(p_norm))
-    print("type: " + str(type))
+    print('Available cluster algorithms \'kmeans\' \'hierarchical\' \'dbscan\'')
+    cluster_type = input('Please select cluster type: ')
+    print('\n')
 
-    """
-    CHOOSE BETWEEN
-    - K-means clustering
-    - Hierarchical clustering
-    - DBSCAN
-    """
+    if cluster_type == 'kmeans':
+        return
+    elif cluster_type == 'hierarchical':
+        clusters = hierarchical.main(P_NORM, K, TYPE, data)
+    elif cluster_type == 'dbscan':
+        clusters = dbscan.main(P_NORM, minpts, data)
+    else:
+        print('This cluster algorithm is not available, please re-run and choose between kmeans, hierarchical and dbscan.')
+        return
 
-    hierarchical_clusters = hierarchical.main(p_norm, k, type, data)
-    evaluation(hierarchical_clusters)
+    cluster_labels = evaluation(clusters)
     
     color_selection = []
-    colors = ['orange', 'green', 'red', 'yellow', 'blue']
-    
-    for color in hierarchical_clusters:
-        color_selection.append(colors[color])
+
+    for cluster_idx in clusters:
+        idx = cluster_labels[cluster_idx]
+        try:
+            color_selection.append(COLORS[idx])
+        except:
+            print('\nWARNING: Not enough colors available for all clusters, please add more colors to COLORS container to visualize plot.')
+            return
 
     color_plt(data, color_selection, *FEATURES)
 
-#################################################################################
+    return
 
-"""
-CHOOSE BETWEEN EXTRACTING DATA FROM CSV FILE
-OR USE THE PREPROCESSING FUNCTION.
-"""
+# GENERAL SETTINGS
+FEATURES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
+COLORS = ['green', 'red', 'blue', 'yellow', 'black']
+
+# DISTANCE SETTINGS
+P_NORM = 1
+
+# K-MEANS AND HIERARCHICAL SETTINGS
+K = 5
+TYPE = 'farthest' #Choose between 'nearest' 'average' 'farthest'
 
 data = preprocess('./data')
 #data = pd.read_csv('csv_data.csv')
 
 main(data)
-# Best result currently with p_norm = 1 and type = 'farthest'
-# Perhaps more trustworthy with p_norm = 4 and type = 'average'
-# Preprocessing settings: 'z_height', 'convex_hull_areas', 'bounding_box_volumes'
-# Clipping values: 15, 2, 100, 3000

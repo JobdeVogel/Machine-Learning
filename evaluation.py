@@ -1,11 +1,8 @@
-from email.errors import ObsoleteHeaderDefect
-from io import IncrementalNewlineDecoder
-from matplotlib.style import available
 import numpy as np
 import itertools
 
 def evaluation(predicted_labels):
-    k = 5
+    k = len(np.unique(predicted_labels))
 
     available_labels = np.arange(k)
     observed_options = list(itertools.permutations(available_labels))
@@ -27,8 +24,9 @@ def evaluation(predicted_labels):
 
         if accuracy > highest_percentage:
             highest_percentage = round(accuracy, 3)
-            cluster_labels = observed_labels
+            cluster_labels = observed
     
-    print('Optimized cluster labels: ' + str(observed))
+    print('Optimized cluster labels: ' + str(cluster_labels))
     print(str(highest_percentage) + '% accuracy')
-    return
+    
+    return cluster_labels

@@ -2,6 +2,17 @@ import os
 import pandas as pd
 import open3d as o3d
 
+"""
+VIEW POINTCLOUD
+
+DEVELOPED BY:
+Job de Vogel
+"""
+
+""""
+THIS SCRIPT VISUALIZES A SPECIFIC POINT CLOUD
+"""
+
 filename = os.path.join('./data', '303.xyz')
 
 """

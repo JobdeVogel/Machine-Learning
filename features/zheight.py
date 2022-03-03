@@ -1,6 +1,12 @@
+"""
+Z-HEIGHT POINT CLOUD
+
+DEVELOPED BY:
+Job de Vogel
+"""
+
 import numpy as np
 import pandas as pd
-import os
 
 def z_height(dataframe):
     data = dataframe.values

@@ -1,29 +1,8 @@
 """
-THIS METHOD CALCULATES EXPECTED CLUSTERS
-BASED ON HIERARCHICAL CLUSTERING
-
-WE ASSUME 5 CLUSTERS:
-- Houses
-- Cars
-- Fences
-- Traffic Lights
-- Trees
-"""
-
-"""
 HIERARCHICAL CLUSTERING
 
-PSEUDECODE:
-    -   Calculate initial proximity matrix using
-        minkowski distance. Distances from points
-        to themselves are assigned with distance
-        equals infinity;
-    -   
-
-
-Pseudocode
-https://www.analyticsvidhya.com/blog/2019/05/beginners-guide-hierarchical-clustering/
-
+DEVELOPED BY:
+Job de Vogel
 """
 
 import numpy as np
@@ -174,14 +153,6 @@ def hierarchical_clustering(proximity_matrix: pd.DataFrame, type='nearest'):
         updated_proximity_matrix[:, point_y] = INFINITY
 
     return clusters
-
-"""
-RETURNS:
-- [0] AN NP ARRAY WITH ALL INDICES ORDERED BY CLUSTER
-- [1] THE SIZES OF THE CLUSTERS
-
-TO BE PLOTTED WITH MATPLOTLIB
-"""
 
 def extract_cluster(clusters, k):
     cluster = clusters[:, len(clusters) - k]

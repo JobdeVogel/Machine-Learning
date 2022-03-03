@@ -1,8 +1,22 @@
+"""
+PREPROCCESSING
+
+DEVELOPED BY:
+Job de Vogel
+"""
+
+"""
+THIS SCRIPT PREPROCESSES THE .XYZ DATA
+USING
+- FEATURES
+- NORMALIZATION
+- CLIPPING EXTREME VALUES
+"""
+
 import os
 import numpy as np
 import pandas as pd
 from functions import loading, color_plt
-from options import set_options
 from features.zheight import z_height
 from features.shaperatio import shapeRatio
 from features.convexhull import getConvexHullArea
@@ -97,19 +111,10 @@ def preprocess(directory):
     # Specify if you want features_array_df or features_array_norm:
     return feature_array_norm
 
-###############################
+# PRINT THE OBSERVED LABELS TO A PLOT
 # FEATURES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
-# set_options()
 
-# """
-# Green: Houses
-# Yellow: Cars
-# Red: Fences
-# Blue: Traffic Lights
-# Orange: Trees
-# """
-
-# colors = ['green', 'yellow', 'red', 'blue', 'orange']
+# colors = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
 # color_selection = []
 
 # for i in range(5):
@@ -119,9 +124,5 @@ def preprocess(directory):
 
 # features = preprocess('./data')
 
-# # Save data to csv
-# df_to_csv(features[FEATURES], 'csv_data.csv', False)
-
 # # Print and plot result
-# print(features)
 # color_plt(features, color_selection, *FEATURES)

@@ -8,7 +8,6 @@ PSEUDOCODE
 """
 
 import numpy as np
-import pandas as pd
 from matplotlib import pyplot as plt
 import time
 
@@ -60,8 +59,7 @@ def calc_eps(proximity_matrix):
     plt.plot(x,y) 
     plt.show()
 
-    print("Please enter maximum curvature (default value is 0.12): ")
-    eps = input()
+    eps = input("Please enter maximum curvature (default value is 0.12): ")
     
     # If user does not select eps, use 0.1
     if not eps:
@@ -111,6 +109,7 @@ def main(p_norm, data):
     # Recursively assign clusters
     # If neighbour is a non-core point, do not search for new neighbours
     for core in core_points:
+        if clusters[core] == core:
             assign_neighbours(clusters, neighbour_bools, core_points, core, core)
 
     # Find which indices are used as cluster

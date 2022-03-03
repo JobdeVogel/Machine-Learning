@@ -1,3 +1,10 @@
+"""
+FUNCTIONS
+
+DEVELOPED BY:
+Job de Vogel
+"""
+
 import matplotlib.pyplot as plt
 
 """ THIS FILE CONTAINS GENERAL FUNCTIONS """

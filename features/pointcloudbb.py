@@ -1,3 +1,10 @@
+"""
+MINIMUM BOUNDING BOX POINT CLOUD
+
+DEVELOPED BY:
+Job de Vogel
+"""
+
 import open3d as o3d
 
 """

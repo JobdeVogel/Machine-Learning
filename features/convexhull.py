@@ -1,3 +1,10 @@
+"""
+CONVEX HULL AREA POINT CLOUD
+
+DEVELOPED BY:
+Jirri van den Bos
+"""
+
 from scipy.spatial import ConvexHull
 from shapely.geometry import MultiPoint
 import numpy as np

@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
-import scipy.spatial as sp
+import scipy.spatial.distance as ds
+import time
 
-def kmeans(dataframe):
+def main(dataframe):
+    start = time.time()
     #Find dimension of data and establish k
     dataframe = pd.DataFrame.to_numpy(dataframe)
     dataset = np.delete(dataframe, 0, 1)
@@ -19,7 +21,7 @@ def kmeans(dataframe):
     for i in range(k):
         step_avg.append([list(ci[0])])
         init_list.pop(sel_int[0])
-        dist_list_dim = sp.distance.cdist(ci, dataset[init_list])**2
+        dist_list_dim = ds.cdist(ci, dataset[init_list])**2
         dist_list = dist_list_dim[0] / np.sum(dist_list_dim[0])
         sel_int = np.random.choice(init_list, 1, p=dist_list)
         ci = [dataset[sel_int[0]]]
@@ -40,7 +42,7 @@ def kmeans(dataframe):
         #Assign points to their clusters
         j = 0
         for i in dataset:
-            val = np.argmin(sp.distance.cdist([i], squeeze_step)[0])
+            val = np.argmin(ds.cdist([i], squeeze_step)[0])
             cycle_list[val].append(list(i))
             result_list[j] = val
             j += 1
@@ -57,16 +59,19 @@ def kmeans(dataframe):
         iteration += 1
 
         #Print an interation update
-        print(iteration, comparison.all(), (np.sum(last_avg)-np.sum(step_avg)))
+        #print(iteration, comparison.all(), (np.sum(last_avg)-np.sum(step_avg)))
 
+    #Find elapsed time
+    end = time.time()
+    print('Kmeans clustering computed in {} seconds'.format(round(end-start, 2)))
     return(result_list)
     
 
 #Run the script from CSV
-data_file = 'csv_data.csv'
-dataframe = pd.read_csv(data_file, skiprows=0)
-results = kmeans(dataframe)
-print(results)    
+# data_file = 'csv_data.csv'
+# dataframe = pd.read_csv(data_file, skiprows=0)
+# results = main(dataframe)
+# print(results)    
     
 
 

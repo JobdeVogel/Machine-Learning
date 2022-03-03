@@ -3,22 +3,20 @@ import pandas as pd
 import scipy.spatial.distance as ds
 import time
 
-def main(dataframe):
+def main(K, dataframe):
     start = time.time()
     #Find dimension of data and establish k
     dataframe = pd.DataFrame.to_numpy(dataframe)
-    dataset = np.delete(dataframe, 0, 1)
+    dataset = dataframe
     dim = dataset.shape[1]
-    k = 5
 
     #Find first random centroid for k-means++ centroid allocation
     init_list = list(range(0, 500))
     step_avg = []
     sel_int = [np.random.randint(0, 499)]
     ci = [dataset[sel_int[0]]]
-
     #Use distance-based probability to select all centroids
-    for i in range(k):
+    for i in range(K):
         step_avg.append([list(ci[0])])
         init_list.pop(sel_int[0])
         dist_list_dim = ds.cdist(ci, dataset[init_list])**2
@@ -27,7 +25,7 @@ def main(dataframe):
         ci = [dataset[sel_int[0]]]
 
     #Initialize comparison lists and iterations
-    last_avg = np.ones([k, dim])
+    last_avg = np.ones([K, dim])
     comparison = last_avg == step_avg
     iteration = 0
     max_iterations = 50
@@ -48,11 +46,11 @@ def main(dataframe):
             j += 1
         
         #Calculate the new averages
-        k = 0
+        l = 0
         for i in cycle_list:
             avg = [sum(x)/len(x) for x in zip(*i)]
-            step_avg[k] = [avg]
-            k += 1
+            step_avg[l] = [avg]
+            l += 1
         
         #Update comparison and iteration
         comparison = last_avg == step_avg
@@ -70,7 +68,7 @@ def main(dataframe):
 #Run the script from CSV
 # data_file = 'csv_data.csv'
 # dataframe = pd.read_csv(data_file, skiprows=0)
-# results = main(dataframe)
+# results = main(5, dataframe)
 # print(results)    
     
 

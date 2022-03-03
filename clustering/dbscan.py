@@ -70,7 +70,7 @@ def calc_eps(proximity_matrix):
     return float(eps)
 
 # Recursive algorithm to assign clusters to points
-def assign_neighbours(clusters, neighbour_bools, index, to_assign):
+def assign_neighbours(clusters, neighbour_bools, core_points ,index, to_assign):
     neighbours = np.where(neighbour_bools[:, index] == True)[0]
 
     clusters[neighbours] = to_assign
@@ -78,13 +78,15 @@ def assign_neighbours(clusters, neighbour_bools, index, to_assign):
     neighbour_bools[neighbours] = False
 
     for neighbour in neighbours:
-        assign_neighbours(clusters, neighbour_bools, neighbour, to_assign)
+        if neighbour in core_points:
+            assign_neighbours(clusters, neighbour_bools, core_points, neighbour, to_assign)
 
 
-def main(p_norm, minpts, data):
+def main(p_norm, data):
     start_0 = time.time()
     # Container for the clusters
     clusters = np.arange(data.shape[0])
+    minpts = data.shape[1] * 2
 
     # Calculate or import proximity matrix
     proximity_matrix = minkowski(p_norm, data)
@@ -109,8 +111,7 @@ def main(p_norm, minpts, data):
     # Recursively assign clusters
     # If neighbour is a non-core point, do not search for new neighbours
     for core in core_points:
-        if clusters[core] == core:
-            assign_neighbours(clusters, neighbour_bools, core, core)
+            assign_neighbours(clusters, neighbour_bools, core_points, core, core)
 
     # Find which indices are used as cluster
     cluster_idxs = np.where(np.bincount(clusters) > minpts - 1)[0]

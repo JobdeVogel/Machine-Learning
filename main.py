@@ -20,8 +20,6 @@ def info():
 def main(data):
     FEATURES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
 
-    minpts = data.shape[1] * 2
-
     print('Available cluster algorithms \'kmeans\' \'hierarchical\' \'dbscan\'')
     cluster_type = input('Please select cluster type: ')
     print('\n')
@@ -31,7 +29,7 @@ def main(data):
     elif cluster_type == 'hierarchical':
         clusters = hierarchical.main(P_NORM, K, TYPE, data)
     elif cluster_type == 'dbscan':
-        clusters = dbscan.main(P_NORM, minpts, data)
+        clusters = dbscan.main(P_NORM, data)
     else:
         print('This cluster algorithm is not available, please re-run and choose between kmeans, hierarchical and dbscan.')
         return
@@ -54,7 +52,7 @@ def main(data):
 
 # GENERAL SETTINGS
 FEATURES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
-COLORS = ['green', 'red', 'blue', 'yellow', 'black']
+COLORS = ['green', 'red', 'blue', 'yellow', 'orange', 'black']
 
 # DISTANCE SETTINGS
 P_NORM = 1
@@ -63,7 +61,8 @@ P_NORM = 1
 K = 5
 TYPE = 'farthest' #Choose between 'nearest' 'average' 'farthest'
 
-data = preprocess('./data')
-#data = pd.read_csv('csv_data.csv')
+print('Preprocessing may take approximately 30 seconds.')
+#data = preprocess('./data')
+data = pd.read_csv('csv_data.csv')
 
 main(data)

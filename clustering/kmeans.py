@@ -1,3 +1,10 @@
+"""
+K-means++ clustering CLUSTERING
+
+DEVELOPED BY:
+Jirri van den Bos
+"""
+
 import numpy as np
 import pandas as pd
 import scipy.spatial.distance as ds

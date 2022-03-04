@@ -103,7 +103,6 @@ def hierarchical_clustering(proximity_matrix: pd.DataFrame, type='nearest'):
     for i in range(1, pointCount):
         loading(i, pointCount)
 
-        # What if a distance already is 0 ????????????
         point_x, point_y = minimum_proximity_pos(updated_proximity_matrix)
 
         # Assign point_y to (group of) point_x

@@ -111,7 +111,7 @@ def preprocess(directory):
     # Specify if you want features_array_df or features_array_norm:
     return feature_array_norm
 
-# PRINT THE OBSERVED LABELS TO A PLOT
+# PRINT THE OBSERVED CLUSTERS TO A PLOT
 # FEATURES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
 
 # colors = ['green', 'yellow', 'red', 'blue', 'orange', 'black']

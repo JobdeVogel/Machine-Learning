@@ -24,6 +24,8 @@ def evaluation(predicted_labels, colors):
     highest_percentage = 0
     cluster_labels = []
 
+    # print(observed_options)
+
     # For each possible cluster label order, calculate the accuracy
     for observed in observed_options:
         observed = np.array(list(observed))

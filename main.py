@@ -32,11 +32,11 @@ def process_data():
 def main(data):
     # SELECT CLUSTER TYPE
     print('Available cluster algorithms \'kmeans\' \'hierarchical\' \'dbscan\'')
-    cluster_type = input('Please select cluster type: ')
+    cluster_type = input('Please select cluster type (default type hierarchical): ')
 
     if cluster_type == 'kmeans':
         clusters = kmeans.main(K, data)
-    elif cluster_type == 'hierarchical':
+    elif cluster_type == 'hierarchical' or cluster_type == '':
         clusters = hierarchical.main(P_NORM, K, TYPE, data)
     elif cluster_type == 'dbscan':
         clusters = dbscan.main(P_NORM, data)
@@ -48,15 +48,15 @@ def main(data):
     color_selection = evaluation(clusters, COLORS)
 
     # PLOT THE RESULT
-    color_plt(data, color_selection, *FEATURES)
+    color_plt(data, color_selection, *FEATURE_NAMES)
 
     return
 
 # GENERAL SETTINGS
-FEATURES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
+FEATURE_NAMES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
 COLORS = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
 
-# DISTANCE SETTINGS
+# HIERARCHICAL AND DENSITY DISTANCE SETTINGS
 P_NORM = 1
 
 # K-MEANS AND HIERARCHICAL SETTINGS

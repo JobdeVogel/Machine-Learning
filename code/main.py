@@ -23,9 +23,9 @@ def process_data():
     process = input('Would you like to preprocess data? Default value NO [y][n] ')
     if process == 'y':
         print('Preprocessing may take approximately 30 seconds.')
-        data = preprocess('./data')
+        data = preprocess('./code/data')
     else:
-        data = pd.read_csv('csv_data.csv')
+        data = pd.read_csv('./code/csv_data.csv')
     
     return data
 

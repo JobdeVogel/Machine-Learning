@@ -122,7 +122,7 @@ def preprocess(directory):
 #     for i in range(100):
 #         color_selection.append(color)
 
-# features = preprocess('./data')
+# features = preprocess('./code/data')
 
 # # Print and plot result
 # color_plt(features, color_selection, *FEATURES)

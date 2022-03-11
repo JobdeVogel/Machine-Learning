@@ -14,6 +14,7 @@ USING
 """
 
 import os
+from matplotlib.style import available
 import numpy as np
 import pandas as pd
 from functions import loading, color_plt
@@ -70,7 +71,7 @@ def normalize_by_column(dataframe):
     return (dataframe-dataframe.min())/(dataframe.max()-dataframe.min())
 
 # final function
-def preprocess(directory):
+def preprocess(directory, features, available_features):
     amount_of_files = len(os.listdir(directory))
 
     z_heights = np.empty([amount_of_files], dtype=np.float64)
@@ -89,12 +90,16 @@ def preprocess(directory):
         # Create a pointCloud object
         pointCloud = pointCloudObject(name, data)
 
-        # Add all features of pointCloud to their feature containers
-        z_heights[i] = pointCloud.max_z()
-        shape_ratios[i] = pointCloud.shape_ratio()
-        convex_hull_areas[i] = pointCloud.convex_hull_area()
-        bounding_box_volumes[i] = pointCloud.bounding_box_volume()
-        
+        for feature in features:
+            if feature == 'z_height':
+                z_heights[i] = pointCloud.max_z()
+            if feature == 'shape_ratios':
+                shape_ratios[i] = pointCloud.shape_ratio()
+            if feature == 'convex_hull_areas':
+                convex_hull_areas[i] = pointCloud.convex_hull_area()
+            if feature == 'bounding_box_volumes':
+                bounding_box_volumes[i] = pointCloud.bounding_box_volume()
+       
     # Clip the values
     z_heights = np.clip(z_heights, 0, 15)
     shape_ratios = np.clip(shape_ratios, 0, 2)
@@ -102,17 +107,20 @@ def preprocess(directory):
     bounding_box_volumes = np.clip(bounding_box_volumes, 0, 3000)
 
     # Format the features
-    feature_array = generate_feature_array(z_heights, convex_hull_areas, bounding_box_volumes)
-    feature_array_df = pd.DataFrame(feature_array, columns=['z_height', 'convex_hull_areas', 'bounding_box_volumes'])
+    feature_array = generate_feature_array(z_heights, shape_ratios, convex_hull_areas, bounding_box_volumes)
+    feature_array_df = pd.DataFrame(feature_array, columns=available_features)
 
     # Normalize the features
     feature_array_norm = normalize_by_column(feature_array_df)
     
     # Specify if you want features_array_df or features_array_norm:
-    return feature_array_norm
+    return feature_array_norm[features]
 
 # PRINT THE OBSERVED CLUSTERS TO A PLOT
-# FEATURES = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
+# AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes']
+
+# # Please select features to preprocess, use same order as AVAILABLE_FEATURES
+# features = ['z_height', 'convex_hull_areas']
 
 # colors = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
 # color_selection = []
@@ -122,7 +130,9 @@ def preprocess(directory):
 #     for i in range(100):
 #         color_selection.append(color)
 
-# features = preprocess('./data')
+# features = preprocess('./code/data', features)
+
+# print(features)
 
 # # Print and plot result
-# color_plt(features, color_selection, *FEATURES)
+# color_plt(features, color_selection, *features)

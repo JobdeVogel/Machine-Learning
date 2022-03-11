@@ -36,7 +36,8 @@ def evaluation(predicted_labels, colors):
         # If point correctly labeled add one to correct
         for obs_label, pred_label in zip(observed_labels, predicted_labels):
             if obs_label == pred_label:
-                correct += 1
+                if pred_label < 5:
+                    correct += 1
 
         # Calculate the accuracy
         accuracy = (correct/500) * 100

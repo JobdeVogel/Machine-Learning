@@ -28,6 +28,12 @@ def color_plt(dataframe, color_selection, *features):
         ax.set_ylabel(features[1])
         ax.set_zlabel(features[2])
 
+        for feature in features:
+            if feature not in dataframe.columns:
+                print('{} is not available in csv_data, please preprocess manually'.format(feature))
+                print('Currently available in csv_data: {}'.format(dataframe.columns))
+                return
+
         ax.scatter(dataframe[features[0]], dataframe[features[1]], dataframe[features[2]], color=color_selection)
     
     plt.show()

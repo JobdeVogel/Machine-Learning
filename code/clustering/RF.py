@@ -5,10 +5,17 @@ from sklearn.ensemble import RandomForestClassifier as RFC
 from sklearn import metrics
 import matplotlib.pyplot as plt
 import seaborn as sn
+import warnings
 
 # Add the labels to the proximity matrix dataframe
 def add_labels(df):
     targets = np.zeros(len(df), dtype=np.int16)
+
+    # 000 - 099: building;
+    # 100 - 199: car;
+    # 200 - 299: fence;
+    # 300 - 399: pole;
+    # 400 - 499: tree.
 
     for i in range(len(df)):
         targets[i] = int(i // 100)
@@ -73,14 +80,20 @@ def learning_curve(data, n_estimators):
     print('')
 
 def main(data):
+    # Skip user warning for class not available in test set (has to do with small training size)
+    warnings.filterwarnings("ignore", category=UserWarning)
+
+    # Add labels to data
     data = add_labels(data)
     
     # Execute for different training sizes and n_estimators
-    n_estimators = [10]
+    print('Executing RF classifier for [1, 10, 100] trees in forest.')
+    n_estimators = [1, 10, 100]
 
     for n in n_estimators:
         learning_curve(data, n)
 
+    # Plot the result
     plt.xlabel('Training size (%)')
     plt.ylabel('Overall Accuracy (%)')
     plt.title('Learning Curve')
@@ -89,15 +102,15 @@ def main(data):
     plt.show()
 
     # Execute only once for 30% test data
-    random_forest(data, test_size=0.5, to_print=True)
+    random_forest(data, test_size=0.3, to_print=True)
 
     return
 
 if __name__ == "__main__":
     # Set the seed for classifier
-    np.random.seed(1) 
+    np.random.seed(2)
 
     # Use csv data
-    data = pd.read_csv('./proximity_matrix.csv')
+    data = pd.read_csv('./code/csv_data.csv')
     
     main(data)

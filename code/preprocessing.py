@@ -116,23 +116,24 @@ def preprocess(directory, features, available_features):
     # Specify if you want features_array_df or features_array_norm:
     return feature_array_norm[features]
 
-# PRINT THE OBSERVED CLUSTERS TO A PLOT
-# AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes']
+if __name__ == '__main__':
+    # PRINT THE OBSERVED CLUSTERS TO A PLOT
+    AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes']
 
-# # Please select features to preprocess, use same order as AVAILABLE_FEATURES
-# features = ['z_height', 'convex_hull_areas']
+    # Please select features to preprocess, use same order as AVAILABLE_FEATURES
+    features = ['z_height', 'convex_hull_areas', 'bounding_box_volumes']
 
-# colors = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
-# color_selection = []
+    colors = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
+    color_selection = []
 
-# for i in range(5):
-#     color = colors[i]
-#     for i in range(100):
-#         color_selection.append(color)
+    for i in range(5):
+        color = colors[i]
+        for i in range(100):
+            color_selection.append(color)
 
-# features = preprocess('./code/data', features)
+    features = preprocess('./code/data', features, AVAILABLE_FEATURES)
 
-# print(features)
+    features.to_csv('proximity_matrix.csv', index=False)
 
-# # Print and plot result
-# color_plt(features, color_selection, *features)
+    # Print and plot result
+    # color_plt(features, color_selection, *features)

@@ -13,7 +13,7 @@ Jirri van den Bos
 print('Loading packages...')
 import pandas as pd
 from preprocessing import preprocess
-from clustering import kmeans, hierarchical, dbscan
+from clustering import kmeans, hierarchical, dbscan, RF
 from functions import color_plt
 from options import set_options
 from evaluation import evaluation
@@ -44,7 +44,8 @@ def main(data):
     elif cluster_type == 'SVM':
         print('WARNING: This clustering algorithm is not implemented yet')
     elif cluster_type == 'RF':
-        print('WARNING: This clustering algorithm is not implemented yet')
+        RF.main(data)
+        return
     else:
         print('This cluster algorithm is not available, please re-run and choose between kmeans, hierarchical, dbscan, SVM and RF.')
         return
@@ -76,7 +77,7 @@ if __name__ == '__main__':
     data = process_data()
 
     # Save data to csv
-    data.to_csv('code/csv_data.csv', index=False)
-    print('Data saved to csv_data.csv')
+    # data.to_csv('code/csv_data.csv', index=False)
+    # print('Data saved to csv_data.csv')
 
     main(data)

@@ -13,7 +13,7 @@ Jirri van den Bos
 print('Loading packages...')
 import pandas as pd
 from preprocessing import preprocess
-from clustering import kmeans, hierarchical, dbscan
+from clustering import kmeans, hierarchical, dbscan, RF
 from functions import color_plt
 from options import set_options
 from evaluation import evaluation
@@ -44,7 +44,8 @@ def main(data):
     elif cluster_type == 'SVM':
         print('WARNING: This clustering algorithm is not implemented yet')
     elif cluster_type == 'RF':
-        print('WARNING: This clustering algorithm is not implemented yet')
+        RF.main(data)
+        return
     else:
         print('This cluster algorithm is not available, please re-run and choose between kmeans, hierarchical, dbscan, SVM and RF.')
         return
@@ -57,11 +58,10 @@ def main(data):
 
     return
 
-# GENERAL SETTINGS
-AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes']
+AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality']
 
 # Please select features to preprocess, use same order as AVAILABLE_FEATURES
-FEATURES = ['z_height', 'shape_ratios', 'bounding_box_volumes']
+FEATURES = ['z_height', 'bounding_box_volumes', 'sphericity']
 COLORS = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
 
 # HIERARCHICAL AND DENSITY DISTANCE SETTINGS

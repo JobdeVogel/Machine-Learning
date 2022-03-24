@@ -23,6 +23,7 @@ from features.shaperatio import shapeRatio
 from features.convexhull import getConvexHullArea
 from features.pointcloudbb import pointcloud_bounding_box
 from features.spatial_features import random_sampling
+from features.average_width import average_width
 
 class pointCloudObject:
     def __str__(self):
@@ -53,28 +54,31 @@ class pointCloudObject:
         return shapeRatio(self.coordinates, 1)
     
     def linearity(self):
-        return random_sampling(self.coordinates, 'linearity', 15, .5, visualize=False)
+        return random_sampling(self.coordinates, 'linearity', 15, .75, visualize=False)
 
     def planarity(self):
-        return random_sampling(self.coordinates, 'planarity', 15, .5, visualize=False)
+        return random_sampling(self.coordinates, 'planarity', 15, .75, visualize=False)
 
     def sphericity(self):
-        return random_sampling(self.coordinates, 'sphericity', 15, .5, visualize=False)
+        return random_sampling(self.coordinates, 'sphericity', 15, .75, visualize=False)
 
     def anisotropy(self):
-        return random_sampling(self.coordinates, 'anisotropy', 15, .5, visualize=False)
+        return random_sampling(self.coordinates, 'anisotropy', 15, .75, visualize=False)
 
     def eigentropy(self):
-        return random_sampling(self.coordinates, 'eigentropy', 15, .5, visualize=False)
+        return random_sampling(self.coordinates, 'eigentropy', 15, .75, visualize=False)
     
     def omnivariance(self):
-        return random_sampling(self.coordinates, 'omnivariance', 15, .5, visualize=False)
+        return random_sampling(self.coordinates, 'omnivariance', 15, .75, visualize=False)
     
     def eigenvalue_sum(self):
-        return random_sampling(self.coordinates, 'eigenvalue_sum', 15, .5, visualize=False)
+        return random_sampling(self.coordinates, 'eigenvalue_sum', 15, .75, visualize=False)
 
     def verticality(self):
-        return random_sampling(self.coordinates, 'verticality', 15, .5, visualize=False)
+        return random_sampling(self.coordinates, 'verticality', 15, .75, visualize=False)
+    
+    def average_width(self):
+        return average_width(self.coordinates, 40)
 
 def xyz_to_df(directory, filename):
     filename = os.path.join(directory, filename)
@@ -111,6 +115,7 @@ def preprocess(directory, features, available_features):
     omnivariances = np.empty([amount_of_files], dtype=np.float64)
     eigenvalue_sums = np.empty([amount_of_files], dtype=np.float64)
     verticalities = np.empty([amount_of_files], dtype=np.float64)
+    average_widths = np.empty([amount_of_files], dtype=np.float64)
     
     # For each file in data directory
     for i, filename in enumerate(os.listdir(directory)):
@@ -148,15 +153,19 @@ def preprocess(directory, features, available_features):
                 eigenvalue_sums[i] = pointCloud.eigenvalue_sum()
             if feature == 'verticality':
                 verticalities[i] = pointCloud.verticality()
+            if feature == 'average_width':
+                average_widths[i] = pointCloud.average_width()
+
        
     # Clip the values
     z_heights = np.clip(z_heights, 0, 15)
     shape_ratios = np.clip(shape_ratios, 0, 2)
     convex_hull_areas = np.clip(convex_hull_areas, 0, 100)
     bounding_box_volumes = np.clip(bounding_box_volumes, 0, 3000)
+    eigenvalue_sums = np.clip(eigenvalue_sums, 2.98, 10)
 
     # Format the features
-    feature_array = generate_feature_array(z_heights, shape_ratios, convex_hull_areas, bounding_box_volumes, linearities, planarities, sphericities, anisotropies, eigentropies, omnivariances, eigenvalue_sums, verticalities)
+    feature_array = generate_feature_array(z_heights, shape_ratios, convex_hull_areas, bounding_box_volumes, linearities, planarities, sphericities, anisotropies, eigentropies, omnivariances, eigenvalue_sums, verticalities, average_widths)
     feature_array_df = pd.DataFrame(feature_array, columns=available_features)
 
     # Normalize the features
@@ -167,10 +176,10 @@ def preprocess(directory, features, available_features):
 
 if __name__ == '__main__':
     # PRINT THE OBSERVED CLUSTERS TO A PLOT
-    AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality']
+    AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality', 'average_width']
 
     # Please select features to preprocess, use same order as AVAILABLE_FEATURES
-    features = ['z_height', 'bounding_box_volumes', 'sphericity']
+    features = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality', 'average_width']
 
     colors = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
     color_selection = []

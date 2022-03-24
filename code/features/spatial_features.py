@@ -86,6 +86,34 @@ def verticality(vector1):
     z = vector1[2]
     return 1 - z
 
+def average_width(data, k_split):
+    min = np.min(data['z'])
+    height_diff = np.max(data['z']) - min
+
+    norm = height_diff / k_split
+
+    data = data.values
+
+    results = np.array([])
+    for i in range(k_split):
+        try:
+            temp_data = data[(data[:, 2] < min + (i+1) * norm)  & (data[:, 2] > min + i * norm)]
+
+            # x_range = np.max(temp_data[:, 0]) - np.min(temp_data[:, 0])
+            # y_range = np.max(temp_data[:, 1]) - np.min(temp_data[:, 1])
+
+            # res = max(x_range, y_range)
+            weights = gaussian_distance_weights(temp_data)
+            res = eigenvalues_vectors(temp_data, weights)[0][0]
+
+            results = np.append(results, res)
+
+        except ValueError:
+            # No points in this z domain
+            pass
+    
+    return np.mean(results)
+
 # Find the k nearest neighbors of point in data
 def neirest_neighborhood(data, p, treshhold):
     x_point, y_point, z_point = data[p]

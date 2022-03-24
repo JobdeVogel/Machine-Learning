@@ -58,10 +58,10 @@ def main(data):
 
     return
 
-AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality']
+AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality', 'average_width']
 
 # Please select features to preprocess, use same order as AVAILABLE_FEATURES
-FEATURES = ['z_height', 'bounding_box_volumes', 'sphericity']
+FEATURES = ['z_height', 'sphericity', 'average_width']
 COLORS = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
 
 # HIERARCHICAL AND DENSITY DISTANCE SETTINGS
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     data = process_data()
 
     # Save data to csv
-    data.to_csv('code/csv_data.csv', index=False)
-    print('Data saved to csv_data.csv')
+    # data.to_csv('code/csv_data.csv', index=False)
+    # print('Data saved to csv_data.csv')
 
     main(data)

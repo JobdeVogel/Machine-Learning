@@ -32,18 +32,17 @@ def process_data():
 def main(data):
     # SELECT CLUSTER TYPE
     print('Available cluster algorithms \'kmeans\' \'hierarchical\' \'dbscan\', \'SVM\', \'RF\'')
-    cluster_type = input('Please select cluster type (default type hierarchical): ')
+    cluster_type = input('Please select cluster type (default type Random Forest): ')
 
-    non_cores = []
     if cluster_type == 'kmeans':
         clusters = kmeans.main(K, data)
-    elif cluster_type == 'hierarchical' or cluster_type == '':
+    elif cluster_type == 'hierarchical':
         clusters = hierarchical.main(P_NORM, K, TYPE, data)
     elif cluster_type == 'dbscan':
         clusters = dbscan.main(P_NORM, data)
     elif cluster_type == 'SVM':
         clusters = SVM.main(data)
-    elif cluster_type == 'RF':
+    elif cluster_type == 'RF' or cluster_type == '':
         RF.main(data)
         return
     else:
@@ -61,8 +60,8 @@ def main(data):
 AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality', 'average_width']
 
 # Please select features to preprocess, use same order as AVAILABLE_FEATURES
-FEATURES = ['z_height', 'eigentropy', 'average_width']
-COLORS = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
+FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality', 'average_width']
+COLORS = ['green', 'yellow', 'red', 'blue', 'orange', 'black', 'purple']
 
 # HIERARCHICAL AND DENSITY DISTANCE SETTINGS
 P_NORM = 1

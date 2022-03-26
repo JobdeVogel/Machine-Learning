@@ -13,7 +13,7 @@ Jirri van den Bos
 print('Loading packages...')
 import pandas as pd
 from preprocessing import preprocess
-from clustering import kmeans, hierarchical, dbscan, RF
+from clustering import kmeans, hierarchical, dbscan, SVM, RF
 from functions import color_plt
 from options import set_options
 from evaluation import evaluation
@@ -32,18 +32,17 @@ def process_data():
 def main(data):
     # SELECT CLUSTER TYPE
     print('Available cluster algorithms \'kmeans\' \'hierarchical\' \'dbscan\', \'SVM\', \'RF\'')
-    cluster_type = input('Please select cluster type (default type hierarchical): ')
+    cluster_type = input('Please select cluster type (default type Random Forest): ')
 
-    non_cores = []
     if cluster_type == 'kmeans':
         clusters = kmeans.main(K, data)
-    elif cluster_type == 'hierarchical' or cluster_type == '':
+    elif cluster_type == 'hierarchical':
         clusters = hierarchical.main(P_NORM, K, TYPE, data)
     elif cluster_type == 'dbscan':
         clusters = dbscan.main(P_NORM, data)
     elif cluster_type == 'SVM':
-        print('WARNING: This clustering algorithm is not implemented yet')
-    elif cluster_type == 'RF':
+        clusters = SVM.main(data)
+    elif cluster_type == 'RF' or cluster_type == '':
         RF.main(data)
         return
     else:
@@ -61,8 +60,8 @@ def main(data):
 AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality', 'average_width']
 
 # Please select features to preprocess, use same order as AVAILABLE_FEATURES
-FEATURES = ['z_height', 'sphericity', 'average_width']
-COLORS = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
+FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality', 'average_width']
+COLORS = ['green', 'yellow', 'red', 'blue', 'orange', 'black', 'purple']
 
 # HIERARCHICAL AND DENSITY DISTANCE SETTINGS
 P_NORM = 1
@@ -73,10 +72,14 @@ TYPE = 'farthest' #Choose between 'nearest' 'average' 'farthest'
 
 if __name__ == '__main__':
     set_options()
-    data = process_data()
 
+    data = process_data()
+    
     # Save data to csv
-    # data.to_csv('code/csv_data.csv', index=False)
-    # print('Data saved to csv_data.csv')
+    data.to_csv('code/csv_data.csv', index=False)
+    print('Data saved to csv_data.csv')
 
     main(data)
+
+
+    

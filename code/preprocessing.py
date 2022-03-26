@@ -54,28 +54,28 @@ class pointCloudObject:
         return shapeRatio(self.coordinates, 1)
     
     def linearity(self):
-        return random_sampling(self.coordinates, 'linearity', 15, .75, visualize=False)
+        return random_sampling(self.coordinates, 'linearity', 50, .75, visualize=False)
 
     def planarity(self):
-        return random_sampling(self.coordinates, 'planarity', 15, .75, visualize=False)
+        return random_sampling(self.coordinates, 'planarity', 50, .75, visualize=False)
 
     def sphericity(self):
-        return random_sampling(self.coordinates, 'sphericity', 15, .75, visualize=False)
+        return random_sampling(self.coordinates, 'sphericity', 50, .75, visualize=False)
 
     def anisotropy(self):
-        return random_sampling(self.coordinates, 'anisotropy', 15, .75, visualize=False)
+        return random_sampling(self.coordinates, 'anisotropy', 50, .75, visualize=False)
 
     def eigentropy(self):
-        return random_sampling(self.coordinates, 'eigentropy', 15, .75, visualize=False)
+        return random_sampling(self.coordinates, 'eigentropy', 50, .75, visualize=False)
     
     def omnivariance(self):
-        return random_sampling(self.coordinates, 'omnivariance', 15, .75, visualize=False)
+        return random_sampling(self.coordinates, 'omnivariance', 50, .75, visualize=False)
     
     def eigenvalue_sum(self):
-        return random_sampling(self.coordinates, 'eigenvalue_sum', 15, .75, visualize=False)
+        return random_sampling(self.coordinates, 'eigenvalue_sum', 50, .75, visualize=False)
 
     def verticality(self):
-        return random_sampling(self.coordinates, 'verticality', 15, .75, visualize=False)
+        return random_sampling(self.coordinates, 'verticality', 50, .75, visualize=False)
     
     def average_width(self):
         return average_width(self.coordinates, 40)
@@ -179,7 +179,7 @@ if __name__ == '__main__':
     AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality', 'average_width']
 
     # Please select features to preprocess, use same order as AVAILABLE_FEATURES
-    features = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality', 'average_width']
+    features = ['z_height', 'sphericity', 'average_width']
 
     colors = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
     color_selection = []

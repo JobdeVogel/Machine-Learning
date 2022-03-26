@@ -125,8 +125,6 @@ def main(p_norm, data):
             # Recursively go through all neighbours
             assign_neighbours(clusters, neighbour_bools, core_points, core, core)
 
-    # assign all that are not assigned
-
     # Find which indices are used as cluster
     cluster_idxs = np.where(np.bincount(clusters) > minpts - 1)[0]
 
@@ -134,7 +132,8 @@ def main(p_norm, data):
     # instead of 207, 306, 307, 309 ... 410
     for i, cluster in enumerate(cluster_idxs):
         clusters[np.where(clusters == cluster)] = i
-    
+
+    # assign all that are not assigned    
     for cluster in clusters:
         if cluster not in assigned_labels:
             clusters[cluster] = i+1

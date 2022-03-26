@@ -70,13 +70,31 @@ def sphericity(lambda1, lambda2, lambda3):
     return lambda3 / lambda1
 
 def omnivariance(lambda1, lambda2, lambda3):
-    return (lambda1 * lambda2 * lambda3) ** (1/3)
+    # Omnivariance does not accept negative values
+    return (abs(lambda1) * abs(lambda2) * abs(lambda3)) ** (1/3)
 
 def anisotropy(lambda1, lambda2, lambda3):
     return (lambda1 - lambda3) / lambda1
 
 def eigentropy(lambda1, lambda2, lambda3):
-    eigentropy = np.sum(lambda1 * np.log(lambda1) + lambda2 * np.log(lambda2) + lambda3 * np.log(lambda3))
+    # Eigentropy does not accept eigenvalues of 0 or lower than 0   
+    if lambda1 > 0:
+        e1 = np.log(abs(lambda1))
+    else:
+        e1 = 0
+
+    if lambda2 > 0:
+        e2 = np.log(abs(lambda2))
+    else:
+        e2 = 0
+    
+    if lambda3 > 0:
+        e3 = np.log(abs(lambda3))
+    else:
+        e3 = 0
+
+    eigentropy = -np.sum(e1 + e2 + e3)
+    
     return eigentropy
 
 def eigenvalue_sum(lambda1, lambda2, lambda3):
@@ -85,34 +103,6 @@ def eigenvalue_sum(lambda1, lambda2, lambda3):
 def verticality(vector1):
     z = vector1[2]
     return 1 - z
-
-def average_width(data, k_split):
-    min = np.min(data['z'])
-    height_diff = np.max(data['z']) - min
-
-    norm = height_diff / k_split
-
-    data = data.values
-
-    results = np.array([])
-    for i in range(k_split):
-        try:
-            temp_data = data[(data[:, 2] < min + (i+1) * norm)  & (data[:, 2] > min + i * norm)]
-
-            # x_range = np.max(temp_data[:, 0]) - np.min(temp_data[:, 0])
-            # y_range = np.max(temp_data[:, 1]) - np.min(temp_data[:, 1])
-
-            # res = max(x_range, y_range)
-            weights = gaussian_distance_weights(temp_data)
-            res = eigenvalues_vectors(temp_data, weights)[0][0]
-
-            results = np.append(results, res)
-
-        except ValueError:
-            # No points in this z domain
-            pass
-    
-    return np.mean(results)
 
 # Find the k nearest neighbors of point in data
 def neirest_neighborhood(data, p, treshhold):
@@ -138,6 +128,10 @@ def random_sampling(data, feature, k, treshhold, visualize=False):
 
     results = []
     for _ in range(k):
+
+        """
+        PROBLEM!!!!!!!!!!!!!!!!!
+        """
         point = random.randint(0, len(data) - 1)
         idxs = neirest_neighborhood(data, point, treshhold)
         
@@ -196,14 +190,14 @@ if __name__ == '__main__':
 
     x = 0
     y = 500
-    feature = 'linearity'
+    feature = 'sphericity'
 
     for i, file in enumerate(os.listdir(directory)[x:y]):
         filename = os.path.join(directory, file)
         data = pd.read_table(filename, skiprows=0, delim_whitespace=True,
                                         names=['x', 'y', 'z'])
     
-        results.append(random_sampling(data, feature, 15, .5, False))
+        results.append(random_sampling(data, feature, 50, .5, False))
 
     frame = np.array([range(y-x), results])
 

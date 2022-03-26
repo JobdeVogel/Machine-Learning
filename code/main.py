@@ -54,14 +54,14 @@ def main(data):
     color_selection = evaluation(clusters, COLORS)
 
     # PLOT THE RESULT
-    # color_plt(data, color_selection, *FEATURES)
+    color_plt(data, color_selection, *FEATURES)
 
     return
 
 AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality', 'average_width']
 
 # Please select features to preprocess, use same order as AVAILABLE_FEATURES
-FEATURES = ['z_height', 'convex_hull_areas', 'average_width']
+FEATURES = ['z_height', 'eigentropy', 'average_width']
 COLORS = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
 
 # HIERARCHICAL AND DENSITY DISTANCE SETTINGS

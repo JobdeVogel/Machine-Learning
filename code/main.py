@@ -13,7 +13,7 @@ Jirri van den Bos
 print('Loading packages...')
 import pandas as pd
 from preprocessing import preprocess
-from clustering import kmeans, hierarchical, dbscan, RF
+from clustering import kmeans, hierarchical, dbscan, SVM, RF
 from functions import color_plt
 from options import set_options
 from evaluation import evaluation
@@ -42,7 +42,7 @@ def main(data):
     elif cluster_type == 'dbscan':
         clusters = dbscan.main(P_NORM, data)
     elif cluster_type == 'SVM':
-        print('WARNING: This clustering algorithm is not implemented yet')
+        clusters = SVM.main(data)
     elif cluster_type == 'RF':
         RF.main(data)
         return
@@ -54,14 +54,14 @@ def main(data):
     color_selection = evaluation(clusters, COLORS)
 
     # PLOT THE RESULT
-    color_plt(data, color_selection, *FEATURES)
+    # color_plt(data, color_selection, *FEATURES)
 
     return
 
 AVAILABLE_FEATURES = ['z_height', 'shape_ratios', 'convex_hull_areas', 'bounding_box_volumes', 'linearity', 'planarity', 'sphericity', 'anisotropy', 'eigentropy', 'omnivariance', 'eigenvalue_sum', 'varticality', 'average_width']
 
 # Please select features to preprocess, use same order as AVAILABLE_FEATURES
-FEATURES = ['z_height', 'sphericity', 'average_width']
+FEATURES = ['z_height', 'convex_hull_areas', 'average_width']
 COLORS = ['green', 'yellow', 'red', 'blue', 'orange', 'black']
 
 # HIERARCHICAL AND DENSITY DISTANCE SETTINGS
@@ -73,10 +73,14 @@ TYPE = 'farthest' #Choose between 'nearest' 'average' 'farthest'
 
 if __name__ == '__main__':
     set_options()
-    data = process_data()
 
+    data = process_data()
+    
     # Save data to csv
-    # data.to_csv('code/csv_data.csv', index=False)
-    # print('Data saved to csv_data.csv')
+    data.to_csv('code/csv_data.csv', index=False)
+    print('Data saved to csv_data.csv')
 
     main(data)
+
+
+    

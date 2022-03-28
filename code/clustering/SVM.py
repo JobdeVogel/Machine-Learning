@@ -127,12 +127,14 @@ def visualizeLinear3D(data, labels, features):
 
     tmp = np.linspace(0,1,5)
     x_mesh, y_mesh = np.meshgrid(tmp, tmp)
+    yy =  [1 if i == labels[-1] else 0 for i in y]
+    yy = np.array(yy)
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.plot_surface(x_mesh, y_mesh, z(x_mesh,y_mesh))
-    ax.plot3D(x[y==0,0], x[y==0,1], x[y==0,2], 'ob', label=ndict[y[0]])
-    ax.plot3D(x[y==1,0], x[y==1,1], x[y==1,2], 'sr', label=ndict[y[-1]])
+    ax.plot3D(x[yy==0,0], x[yy==0,1], x[yy==0,2], 'ob', label=ndict[y[0]])
+    ax.plot3D(x[yy==1,0], x[yy==1,1], x[yy==1,2], 'sr', label=ndict[y[-1]])
     ax.set_xlabel(features[0])
     ax.set_ylabel(features[1])
     ax.set_zlabel(features[2])
@@ -226,7 +228,7 @@ def main(data, param_check, features):
     # 2: fence;
     # 3: pole;
     # 4: tree.
-    labels = (0, 1)
+    labels = (1, 2)
     visualizeRBF2D(data, labels, features)
     visualizeLinear3D(data, labels, features)
 
@@ -238,4 +240,4 @@ if __name__ == "__main__":
     data = pd.read_csv('./code/csv_data.csv')
     data = data[FEATURES]
     param_check = False
-    main(data, param_check)
+    main(data, param_check, FEATURES)

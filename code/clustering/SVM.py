@@ -1,17 +1,11 @@
-from asyncio import constants
-from matplotlib import projections
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, balanced_accuracy_score
+from sklearn.metrics import confusion_matrix, accuracy_score, balanced_accuracy_score
 from seaborn import heatmap
-
-from skimage import measure
-from tikzplotlib import save as tikz_save
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 #Add labels to dataset
 def addLabels(data):
@@ -25,7 +19,7 @@ def addLabels(data):
     return data
 
 #Find the best hyperparameters using GridSearchCV
-def findParameters(param_dict, check, test_size):
+def findParameters(data, param_dict, check, test_size):
     results = []
     x_train, x_test, y_train, y_test = train_test_split(data.drop('labels', axis=1), data['labels'], test_size=test_size)
     iterate = param_dict[check]
@@ -40,7 +34,7 @@ def findParameters(param_dict, check, test_size):
 #Main function for svm classification
 def supportVector(data, param, test_size, to_print = False):
     x_train, x_test, y_train, y_test = train_test_split(data.drop('labels', axis=1), data['labels'], test_size=test_size)
-    clf = SVC(**param)
+    clf = SVC(kernel='sigmoid',C=100,gamma='auto', degree=2)
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
@@ -84,7 +78,7 @@ def learningCurve(data, param):
 
     return train_sizes, accuracies
 
-def visualizeRBF2D(data, labels):
+def visualizeRBF2D(data, labels, features):
     param = {'kernel' : 'rbf', 'C' : 10, 'gamma' : 'scale'}
     data = data.loc[data['labels'].isin(labels)]
     x = data.iloc[:, [0,1]].to_numpy()
@@ -113,11 +107,11 @@ def visualizeRBF2D(data, labels):
     ax.contour(xx_mesh, yy_mesh, z, colors='k', levels=[-1, 0, 1], alpha = 0.5, linestyles=['--','-','--'])
     ax.scatter(clf.support_vectors_[:,0], clf.support_vectors_[:, 1], s=100, linewidth=1, facecolors='none', edgecolors='k')
     ax.legend()
-    plt.xlabel(FEATURES[0])
-    plt.ylabel(FEATURES[1])
+    plt.xlabel(features[0])
+    plt.ylabel(features[1])
     plt.show()
 
-def visualizeLinear3D(data, labels):
+def visualizeLinear3D(data, labels, features):
     param = {'kernel' : 'linear', 'C' : 100}
     data = data.loc[data['labels'].isin(labels)]
     x = data.iloc[:, [0,1,2]].to_numpy()
@@ -139,14 +133,14 @@ def visualizeLinear3D(data, labels):
     ax.plot_surface(x_mesh, y_mesh, z(x_mesh,y_mesh))
     ax.plot3D(x[y==0,0], x[y==0,1], x[y==0,2], 'ob', label=ndict[y[0]])
     ax.plot3D(x[y==1,0], x[y==1,1], x[y==1,2], 'sr', label=ndict[y[-1]])
-    ax.set_xlabel(FEATURES[0])
-    ax.set_ylabel(FEATURES[1])
-    ax.set_zlabel(FEATURES[2])
+    ax.set_xlabel(features[0])
+    ax.set_ylabel(features[1])
+    ax.set_zlabel(features[2])
     ax.legend()
     plt.show()
 
 #Main Loop
-def main(data, param_check):
+def main(data, param_check, features):
     data = addLabels(data)
     constant = []
     #Preselected empirical best hyperparameters for this dataset
@@ -185,7 +179,7 @@ def main(data, param_check):
         labels = param_dict[check]
 
         #Finding the best params to use for the different values to check
-        params = findParameters(param_dict, check, preselected_test_size)
+        params = findParameters(data, param_dict, check, preselected_test_size)
         print(params)
 
     #Select the preselected params by setting param_check to False 
@@ -233,8 +227,8 @@ def main(data, param_check):
     # 3: pole;
     # 4: tree.
     labels = (0, 1)
-    visualizeRBF2D(data, labels)
-    visualizeLinear3D(data, labels)
+    visualizeRBF2D(data, labels, features)
+    visualizeLinear3D(data, labels, features)
 
 
 if __name__ == "__main__":

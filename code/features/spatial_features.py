@@ -148,7 +148,7 @@ def random_sampling(data, feature, k, treshhold, visualize=False):
 
             values, vectors = eigenvalues_vectors(neigh_data, weights)
             lambda1, lambda2, lambda3 = values
-            
+
             if feature == 'linearity':
                 results.append(linearity(lambda1, lambda2, lambda3))
             elif feature == 'planarity':
@@ -165,6 +165,8 @@ def random_sampling(data, feature, k, treshhold, visualize=False):
                 results.append(eigenvalue_sum(lambda1, lambda2, lambda3))
             elif feature == 'verticality':
                 results.append(verticality(vectors[0]))
+
+
 
     if visualize:
         open3d_pointcloud = o3d.geometry.PointCloud()
@@ -197,7 +199,7 @@ if __name__ == '__main__':
         data = pd.read_table(filename, skiprows=0, delim_whitespace=True,
                                         names=['x', 'y', 'z'])
     
-        results.append(random_sampling(data, feature, 50, .5, False))
+        results.append(random_sampling(data, feature, 50, .5, True))
 
     frame = np.array([range(y-x), results])
 

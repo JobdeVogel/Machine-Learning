@@ -13,7 +13,7 @@ Job de Vogel
 THIS SCRIPT VISUALIZES A SPECIFIC POINT CLOUD
 """
 
-filename = os.path.join('./code/data', '007.xyz')
+filename = os.path.join('./code/data', '000.xyz')
 
 """
 0-99: Houses

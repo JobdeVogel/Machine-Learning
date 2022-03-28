@@ -54,28 +54,28 @@ class pointCloudObject:
         return shapeRatio(self.coordinates, 1)
     
     def linearity(self):
-        return random_sampling(self.coordinates, 'linearity', 50, .75, visualize=False)
+        return random_sampling(self.coordinates, 'linearity', 30, .75, visualize=False)
 
     def planarity(self):
-        return random_sampling(self.coordinates, 'planarity', 50, .75, visualize=False)
+        return random_sampling(self.coordinates, 'planarity', 30, .75, visualize=False)
 
     def sphericity(self):
-        return random_sampling(self.coordinates, 'sphericity', 50, .75, visualize=False)
+        return random_sampling(self.coordinates, 'sphericity', 30, .75, visualize=False)
 
     def anisotropy(self):
-        return random_sampling(self.coordinates, 'anisotropy', 50, .75, visualize=False)
+        return random_sampling(self.coordinates, 'anisotropy', 30, .75, visualize=False)
 
     def eigentropy(self):
-        return random_sampling(self.coordinates, 'eigentropy', 50, .75, visualize=False)
+        return random_sampling(self.coordinates, 'eigentropy', 30, .75, visualize=False)
     
     def omnivariance(self):
-        return random_sampling(self.coordinates, 'omnivariance', 50, .75, visualize=False)
+        return random_sampling(self.coordinates, 'omnivariance', 30, .75, visualize=False)
     
     def eigenvalue_sum(self):
-        return random_sampling(self.coordinates, 'eigenvalue_sum', 50, .75, visualize=False)
+        return random_sampling(self.coordinates, 'eigenvalue_sum', 30, .75, visualize=False)
 
     def verticality(self):
-        return random_sampling(self.coordinates, 'verticality', 50, .75, visualize=False)
+        return random_sampling(self.coordinates, 'verticality', 30, .75, visualize=False)
     
     def average_width(self):
         return average_width(self.coordinates, 40)
